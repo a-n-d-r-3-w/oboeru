@@ -31,8 +31,8 @@ const connectRunClose = async (fn) => {
 };
 
 const add = async ({ username, password }) => {
+  const passwordHash = bcrypt.hashSync(password, NUM_SALT_ROUNDS);
   await connectRunClose(async (collection) => {
-    const passwordHash = bcrypt.hashSync(password, NUM_SALT_ROUNDS);
     await collection.insertOne({ username, passwordHash });
     console.log(`Added user: ${username}`);
     console.log(`Password hash: ${passwordHash}`);

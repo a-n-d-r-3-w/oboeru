@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { MongoClient } = require('mongodb');
 const bcrypt = require('bcrypt');
 
@@ -10,6 +11,7 @@ const connectRunClose = async (fn) => {
   let client;
 
   try {
+    // noinspection JSCheckFunctionSignatures, because WebStorm doesn't know about useNewUrlParser.
     client = await MongoClient.connect(DB_URL, { useNewUrlParser: true });
     console.log(`Opened connection to ${DB_URL}`);
     const db = client.db(DB_NAME);

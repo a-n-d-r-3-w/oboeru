@@ -27,11 +27,10 @@ const connectRunClose = async (fn) => {
 
 const addUser = async ({ username, password }) => {
   await connectRunClose(async (collection) => {
-    await collection.insertOne({
-      username,
-      passwordHash: bcrypt.hashSync(password, NUM_SALT_ROUNDS),
-    });
-    console.log(`Added user '${username}'`);
+    const passwordHash = bcrypt.hashSync(password, NUM_SALT_ROUNDS);
+    await collection.insertOne({ username, passwordHash });
+    console.log(`Added user: ${username}`);
+    console.log(`Password hash: ${passwordHash}`);
   });
 };
 
@@ -44,12 +43,17 @@ const removeAllUsers = async () => {
 const users = async () => {
   await connectRunClose(async (collection) => {
     const documents = await collection.find({}).toArray();
-    console.log(documents);
+    console.log('Users:');
+    documents.map(({ username }) => {
+      console.log(username);
+      return null;
+    });
   });
 };
 
 (async () => {
   await removeAllUsers();
   await addUser({ username: 'wolfwire', password: 'w01fw1r3' });
+  await addUser({ username: 'brainstorm', password: 'br@1n$+0rm' });
   await users();
 })();

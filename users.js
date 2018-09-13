@@ -47,8 +47,13 @@ const removeAll = async () => {
 
 const get = ({ username }) => connectRunClose(collection => collection.findOne({ username }));
 
+const isAuthentic = async ({ username, password }) => {
+  const user = await get({ username });
+  return bcrypt.compareSync(password, user.passwordHash);
+};
+
 module.exports = {
   add,
   removeAll,
-  get,
+  isAuthentic,
 };

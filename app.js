@@ -1,16 +1,24 @@
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
+const bcrypt = require('bcrypt');
+
 const COLLECTION_NAME = 'users';
 const DB_NAME = 'oboeru';
+const NUM_SALT_ROUNDS = 10;
+
+const dropCollection = async db => {
+  const collection = db.collection(COLLECTION_NAME);
+  await collection.drop();
+}
 
 const insertDocuments = async db => {
   const collection = db.collection(COLLECTION_NAME);
   const result = await collection.insertMany([
-    { username: 'wolfwire', passwordHash: 'w01fw1r3' },
-    { username: 'brainstorm', passwordHash: 'br@in$+0rm' },
+    { username: 'wolfwire', passwordHash: bcrypt.hashSync('w01fw1r3', NUM_SALT_ROUNDS) },
+    { username: 'brainstorm', passwordHash: bcrypt.hashSync('br@in$+0rm', NUM_SALT_ROUNDS) },
   ]);
-  assert.equal(3, result.result.n)
-  assert.equal(3, result.ops.length)
+  assert.equal(2, result.result.n)
+  assert.equal(2, result.ops.length)
   console.log('Inserted 3 documents into the collection')
 };
 
@@ -28,8 +36,9 @@ const findDocuments = async db => {
     client = await MongoClient.connect(url, { useNewUrlParser: true });
     console.log('Opened connection to mongodb');
     const db = client.db(DB_NAME);
-    insertDocuments(db);
-    findDocuments(db);
+    await dropCollection(db);
+    await insertDocuments(db);
+    await findDocuments(db);
   } catch (err) {
     console.log(err.stack);
   }

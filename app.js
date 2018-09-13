@@ -1,50 +1,55 @@
 const { MongoClient } = require('mongodb');
-const assert = require('assert');
 const bcrypt = require('bcrypt');
 
-const COLLECTION_NAME = 'users';
+const DB_URL = 'mongodb://localhost:27017';
 const DB_NAME = 'oboeru';
+const COLLECTION_NAME = 'users';
 const NUM_SALT_ROUNDS = 10;
 
-const dropCollection = async (db) => {
-  const collection = db.collection(COLLECTION_NAME);
-  await collection.drop();
-};
-
-const insertDocuments = async (db) => {
-  const collection = db.collection(COLLECTION_NAME);
-  const result = await collection.insertMany([
-    { username: 'wolfwire', passwordHash: bcrypt.hashSync('w01fw1r3', NUM_SALT_ROUNDS) },
-    { username: 'brainstorm', passwordHash: bcrypt.hashSync('br@in$+0rm', NUM_SALT_ROUNDS) },
-  ]);
-  assert.equal(2, result.result.n);
-  assert.equal(2, result.ops.length);
-  console.log('Inserted 3 documents into the collection');
-};
-
-const findDocuments = async (db) => {
-  const collection = db.collection(COLLECTION_NAME);
-  const documents = await collection.find({}).toArray();
-  console.log(documents);
-};
-
-(async () => {
-  const url = 'mongodb://localhost:27017';
+const connectRunClose = async (fn) => {
   let client;
 
   try {
-    client = await MongoClient.connect(url, { useNewUrlParser: true });
-    console.log('Opened connection to mongodb');
+    client = await MongoClient.connect(DB_URL, { useNewUrlParser: true });
+    console.log(`Opened connection to ${DB_URL}`);
     const db = client.db(DB_NAME);
-    await dropCollection(db);
-    await insertDocuments(db);
-    await findDocuments(db);
+    const collection = db.collection(COLLECTION_NAME);
+    await fn(collection);
   } catch (err) {
-    console.log(err.stack);
+    console.error(err);
   }
 
   if (client) {
     client.close();
-    console.log('Closed connection to mongodb');
+    console.log(`Closed connection to ${DB_URL}`);
   }
+};
+
+const addUser = async ({ username, password }) => {
+  await connectRunClose(async (collection) => {
+    await collection.insertOne({
+      username,
+      passwordHash: bcrypt.hashSync(password, NUM_SALT_ROUNDS),
+    });
+    console.log(`Added user '${username}'`);
+  });
+};
+
+const removeAllUsers = async () => {
+  await connectRunClose(async (collection) => {
+    await collection.drop();
+  });
+};
+
+const users = async () => {
+  await connectRunClose(async (collection) => {
+    const documents = await collection.find({}).toArray();
+    console.log(documents);
+  });
+};
+
+(async () => {
+  await removeAllUsers();
+  await addUser({ username: 'wolfwire', password: 'w01fw1r3' });
+  await users();
 })();

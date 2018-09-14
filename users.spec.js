@@ -1,4 +1,5 @@
 /* globals beforeEach, expect, test */
+// This test requires mongod to be running in the background.
 const users = require('./users');
 
 const getNumUsers = async () => (await users.getAll()).length;

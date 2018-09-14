@@ -45,6 +45,9 @@ const removeAll = async () => {
 
 const isAuthentic = async ({ username, password }) => {
   const user = await connectRunClose(collection => collection.findOne({ username }));
+  if (!user) {
+    return false;
+  }
   return bcrypt.compareSync(password, user.passwordHash);
 };
 

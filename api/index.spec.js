@@ -2,11 +2,21 @@
 /* eslint-disable global-require */
 // This test requires the Express server to be running.
 const request = require('supertest');
+const users = require('./db/users');
+
+const getNumUsers = async () => (await users.getAll()).length;
 
 let server;
 
 beforeEach(async () => {
   server = require('./index');
+
+  const numUsers = await getNumUsers();
+  if (numUsers === 0) {
+    return;
+  }
+  await users.removeAll();
+  expect(await getNumUsers()).toBe(0);
 });
 
 afterEach(async () => {
@@ -37,6 +47,10 @@ describe('Add user', () => {
 });
 
 describe('Authenticate user', () => {
+  beforeEach(async () => {
+    await users.add({ username: 'optimus', password: '0p+1mu$' });
+  });
+
   test('Happy path', async () => {
     const response = await request(server)
       .get('/api/users')

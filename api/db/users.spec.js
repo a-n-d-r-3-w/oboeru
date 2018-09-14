@@ -24,6 +24,17 @@ test('add', async () => {
   expect(await getNumUsers()).toBe(2);
 });
 
+test('add same user again', async () => {
+  await users.add({ username: 'optimus', password: '0p+1mu$' });
+  expect(await getNumUsers()).toBe(1);
+  try {
+    await users.add({ username: 'optimus', password: '0p+1mu$' });
+  } catch (error) {
+    expect(error).toEqual(new Error('User already exists'));
+  }
+  expect(await getNumUsers()).toBe(1);
+});
+
 test('getAll', async () => {
   await users.add({ username: 'optimus', password: '0p+1mu$' });
   await users.add({ username: 'rodimus', password: 'r0d1mu$' });

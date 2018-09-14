@@ -3,8 +3,6 @@
 // This test requires the Express server to be running.
 const request = require('supertest');
 
-// request = request('http://localhost:3000');
-
 let server;
 
 beforeEach(async () => {

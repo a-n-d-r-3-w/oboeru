@@ -29,6 +29,9 @@ const connectRunClose = async (fn) => {
 };
 
 const add = ({ username, password }) => {
+  if (!username || !password) {
+    throw new Error('Missing username or password');
+  }
   const passwordHash = bcrypt.hashSync(password, NUM_SALT_ROUNDS);
   return connectRunClose(collection => collection.insertOne({ username, passwordHash }));
 };

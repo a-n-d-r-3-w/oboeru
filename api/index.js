@@ -4,9 +4,13 @@ const users = require('./db/users');
 
 app.use(bodyParser.json());
 app.put('/api/users', async (req, res) => {
-  // const { username, password } = req.body;
-  // await users.add({ username, password });
-  res.json(req.body);
+  const { username, password } = req.body;
+  try {
+    await users.add({ username, password });
+    res.end();
+  } catch (error) {
+    res.status(400).end();
+  }
 });
 
 const server = app.listen(3000);

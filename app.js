@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 const assert = require('assert');
-const users = require('./users');
+const users = require('./db/users');
 
 (async () => {
   // Clear database

@@ -31,6 +31,15 @@ describe('Add user', () => {
     expect(response.status).toBe(200);
   });
 
+  test('Add duplicate user', async () => {
+    await users.add({ username: 'optimus', password: '0p+1mu$' });
+    const response = await request(server)
+      .post('/api/users')
+      .send({ username: 'optimus', password: '0p+1mu$' });
+    expect(response.status).toBe(400);
+  });
+
+
   test('Missing password', async () => {
     const response = await request(server)
       .post('/api/users')

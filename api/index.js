@@ -1,8 +1,10 @@
-const express = require('express');
+const app = require('express')();
+const bodyParser = require('body-parser');
 
-const app = express();
-
-app.get('/', (req, res) => res.send('Hey there'));
+app.use(bodyParser.json());
+app.put('/api/users', (req, res) => {
+  res.json(req.body);
+});
 
 const server = app.listen(3000);
 

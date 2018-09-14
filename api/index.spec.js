@@ -13,7 +13,13 @@ afterEach(async () => {
   server.close();
 });
 
-test('smoke', async () => {
-  const response = await request(server).get('/');
-  expect(response.statusCode).toBe(200);
+test('PUT /api/users adds a user', async () => {
+  const response = await request(server)
+    .put('/api/users')
+    .send({ username: 'optimus', password: '0p+1mu$' });
+  expect(response.status).toBe(200);
+  expect(response.body).toEqual({
+    username: 'optimus',
+    password: '0p+1mu$',
+  });
 });

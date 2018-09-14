@@ -4,7 +4,7 @@ const users = require('./db/users');
 
 app.use(bodyParser.json());
 
-app.put('/api/users', async (req, res) => {
+app.post('/api/users', async (req, res) => {
   const { username, password } = req.body;
   try {
     await users.add({ username, password });

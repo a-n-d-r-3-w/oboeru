@@ -16,21 +16,21 @@ afterEach(async () => {
 describe('Add user', () => {
   test('Happy path', async () => {
     const response = await request(server)
-      .put('/api/users')
+      .post('/api/users')
       .send({ username: 'optimus', password: '0p+1mu$' });
     expect(response.status).toBe(200);
   });
 
   test('Missing password', async () => {
     const response = await request(server)
-      .put('/api/users')
+      .post('/api/users')
       .send({ username: 'optimus' });
     expect(response.status).toBe(400);
   });
 
   test('Missing username', async () => {
     const response = await request(server)
-      .put('/api/users')
+      .post('/api/users')
       .send({ password: '0p+1mu$' });
     expect(response.status).toBe(400);
   });

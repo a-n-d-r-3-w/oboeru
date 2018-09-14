@@ -2,6 +2,8 @@
 // This test requires mongod to be running in the background.
 const users = require('./users');
 
+const OK = 1; // 1 means 'OK' in the Node.js MongoDB Driver API.
+
 const getNumUsers = async () => (await users.getAll()).length;
 
 beforeEach(async () => {
@@ -14,9 +16,11 @@ beforeEach(async () => {
 });
 
 test('add', async () => {
-  await users.add({ username: 'optimus', password: '0p+1mu$' });
+  const optimusResult = await users.add({ username: 'optimus', password: '0p+1mu$' });
+  expect(optimusResult.result.ok).toBe(OK);
   expect(await getNumUsers()).toBe(1);
-  await users.add({ username: 'rodimus', password: 'r0d1mu$' });
+  const rodimusResult = await users.add({ username: 'rodimus', password: 'r0d1mu$' });
+  expect(rodimusResult.result.ok).toBe(OK);
   expect(await getNumUsers()).toBe(2);
 });
 

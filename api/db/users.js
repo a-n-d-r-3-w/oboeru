@@ -28,20 +28,14 @@ const connectRunClose = async (fn) => {
   return result;
 };
 
-const add = async ({ username, password }) => {
+const add = ({ username, password }) => {
   const passwordHash = bcrypt.hashSync(password, NUM_SALT_ROUNDS);
-  await connectRunClose(async (collection) => {
-    await collection.insertOne({ username, passwordHash });
-  });
+  return connectRunClose(collection => collection.insertOne({ username, passwordHash }));
 };
 
-const getAll = async () => connectRunClose(collection => collection.find({}).toArray());
+const getAll = () => connectRunClose(collection => collection.find({}).toArray());
 
-const removeAll = async () => {
-  await connectRunClose(async (collection) => {
-    await collection.drop();
-  });
-};
+const removeAll = () => connectRunClose(collection => collection.drop());
 
 const isAuthentic = async ({ username, password }) => {
   const user = await connectRunClose(collection => collection.findOne({ username }));

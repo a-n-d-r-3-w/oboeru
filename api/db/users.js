@@ -41,6 +41,9 @@ const getAll = () => connectRunClose(collection => collection.find({}).toArray()
 const removeAll = () => connectRunClose(collection => collection.drop());
 
 const isAuthentic = async ({ username, password }) => {
+  if (!username || !password) {
+    throw new Error('Missing username or password');
+  }
   const user = await connectRunClose(collection => collection.findOne({ username }));
   if (!user) {
     return false;

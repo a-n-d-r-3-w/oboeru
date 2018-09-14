@@ -14,7 +14,6 @@ const connectRunClose = async (fn) => {
   try {
     // noinspection JSCheckFunctionSignatures, because WebStorm doesn't know about useNewUrlParser.
     client = await MongoClient.connect(DB_URL, { useNewUrlParser: true });
-    console.log(`Opened connection to ${DB_URL}`);
     const db = client.db(DB_NAME);
     const collection = db.collection(COLLECTION_NAME);
     result = await fn(collection);
@@ -24,7 +23,6 @@ const connectRunClose = async (fn) => {
 
   if (client) {
     client.close();
-    console.log(`Closed connection to ${DB_URL}`);
   }
 
   return result;
@@ -34,10 +32,10 @@ const add = async ({ username, password }) => {
   const passwordHash = bcrypt.hashSync(password, NUM_SALT_ROUNDS);
   await connectRunClose(async (collection) => {
     await collection.insertOne({ username, passwordHash });
-    console.log(`Added user: ${username}`);
-    console.log(`Password hash: ${passwordHash}`);
   });
 };
+
+const getAll = async () => connectRunClose(collection => collection.find({}).toArray());
 
 const removeAll = async () => {
   await connectRunClose(async (collection) => {
@@ -45,15 +43,14 @@ const removeAll = async () => {
   });
 };
 
-const get = ({ username }) => connectRunClose(collection => collection.findOne({ username }));
-
 const isAuthentic = async ({ username, password }) => {
-  const user = await get({ username });
+  const user = await connectRunClose(collection => collection.findOne({ username }));
   return bcrypt.compareSync(password, user.passwordHash);
 };
 
 module.exports = {
   add,
+  getAll,
   removeAll,
   isAuthentic,
 };

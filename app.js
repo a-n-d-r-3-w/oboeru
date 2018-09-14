@@ -7,10 +7,22 @@ const users = require('./users');
   await users.removeAll();
 
   // Add users
-  await users.add({ username: 'wolfwire', password: 'w01fw1r3' });
-  await users.add({ username: 'brainstorm', password: 'br@1n$+0rm' });
+  await users.add({
+    username: 'wolfwire',
+    password: 'w01fw1r3',
+  });
+  await users.add({
+    username: 'brainstorm',
+    password: 'br@1n$+0rm',
+  });
 
   // Exercise isAuthentic
-  assert(await users.isAuthentic({ username: 'wolfwire', password: 'w01fw1r3' }));
-  assert(!await users.isAuthentic({ username: 'brainstorm', password: 'wrong password' }));
+  assert(await users.isAuthentic({
+    username: 'wolfwire',
+    password: 'w01fw1r3',
+  }));
+  assert(!await users.isAuthentic({
+    username: 'brainstorm',
+    password: 'wrong password',
+  }));
 })();
